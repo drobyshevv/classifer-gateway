@@ -1,0 +1,20 @@
+version: "3"
+
+tasks:
+  install:
+    desc: "Install dependencies"
+    cmds:
+      - go mod tidy
+      - go mod download
+
+  run:
+    aliases: [r]
+    desc: "Run gateway server"
+    cmds:
+      - go run cmd/gateway/main.go
+
+  run-dev:
+    aliases: [dev]
+    desc: "Run gateway with development settings"
+    cmds:
+      - GRPC_ADDR=localhost:44044 HTTP_ADDR=:8080 go run cmd/gateway/main.go
