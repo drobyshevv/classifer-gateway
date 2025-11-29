@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	servicev1 "github.com/drobyshevv/proto-classifier-expert-search/gen/go/proto/service"
 	ssov1 "github.com/drobyshevv/protos/gen/go/proto/sso"
 )
 
@@ -18,7 +19,8 @@ type App struct {
 	httpServer *http.Server
 }
 
-func New(log *slog.Logger, grpcAddr, httpAddr string) *App {
+// Меняем сигнатуру - добавляем expertGRPCAddr
+func New(log *slog.Logger, ssoGRPCAddr, expertGRPCAddr, httpAddr string) *App {
 	mux := runtime.NewServeMux()
 
 	opts := []grpc.DialOption{
@@ -26,9 +28,15 @@ func New(log *slog.Logger, grpcAddr, httpAddr string) *App {
 	}
 
 	// handlers for Auth service
-	err := ssov1.RegisterAuthHandlerFromEndpoint(context.Background(), mux, grpcAddr, opts)
+	err := ssov1.RegisterAuthHandlerFromEndpoint(context.Background(), mux, ssoGRPCAddr, opts)
 	if err != nil {
-		panic(fmt.Sprintf("failed to register gateway: %v", err))
+		panic(fmt.Sprintf("failed to register auth gateway: %v", err))
+	}
+
+	// handlers for ExpertSearch service
+	err = servicev1.RegisterExpertSearchServiceHandlerFromEndpoint(context.Background(), mux, expertGRPCAddr, opts)
+	if err != nil {
+		panic(fmt.Sprintf("failed to register expert-search gateway: %v", err))
 	}
 
 	return &App{

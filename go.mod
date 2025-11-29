@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/drobyshevv/proto-classifier-expert-search v0.0.6
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
